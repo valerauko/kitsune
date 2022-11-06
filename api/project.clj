@@ -18,7 +18,6 @@
                   :exclusions [metosin/jsonista
                                org.clojure/core.rrb-vector]]
                  [metosin/ring-http-response "0.9.3"]
-                 [ring/ring-defaults "0.3.2"]
                  [com.taoensso/carmine "3.1.0"]
                  [com.nilenso/goose "0.3.0"]
                  [buddy/buddy-sign "3.4.333"]
