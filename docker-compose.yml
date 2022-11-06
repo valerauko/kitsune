@@ -25,6 +25,8 @@ services:
   queue:
     image: rabbitmq:3.11.2
     volumes:
+      - ./rabbitmq/rabbitmq_delayed_message_exchange.ez:/opt/rabbitmq/plugins/rabbitmq_delayed_message_exchange.ez
+      - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
       - rabbitmq:/var/lib/rabbitmq
 
   cache:
