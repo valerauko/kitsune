@@ -10,7 +10,7 @@
   </appender>
 
   <logger name="com.zaxxer.hikari" level="warn" />
-  <logger name="o.m.jdbc.client.impl.StandardClient" level="info" />
+  <logger name="org.mariadb.jdbc" level="info" />
 
   <root level="DEBUG">
     <appender-ref ref="stdout" />
