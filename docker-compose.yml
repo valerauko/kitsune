@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  api:
+    image: clojure:temurin-19-lein
+    working_dir: /usr/local/kitsune/api
+    command: lein repl :headless :host 0.0.0.0 :port 42001
+    ports:
+      - 42001:42001
+      - 3000:3000
+    volumes:
+      - maven:/root/.m2
+      - ./api:/usr/local/kitsune/api
+
+  db:
+    image: mariadb:10.9.3
+    environment:
+      MARIADB_USER: kitsune
+      MARIADB_PASSWORD: whatever
+      MARIADB_DATABASE: kitsune
+      MARIADB_RANDOM_ROOT_PASSWORD: 1
+    volumes:
+      - mariadb:/var/lib/mysql
+
+  queue:
+    image: rabbitmq:3.11.2
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+
+  cache:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly
+    volumes:
+      - dragonfly:/data
+
+  swagger:
+    image: swaggerapi/swagger-ui:v4.15.2
+    environment:
+      SWAGGER_JSON: http://api:3000/openapi.json
+
+  localtunnel:
+    image: efrecon/localtunnel
+    command: --local-host api --port 3000 --subdomain kitsune
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+
+volumes:
+  mariadb:
+  rabbitmq:
+  dragonfly:
+  maven:
