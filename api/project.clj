@@ -17,15 +17,20 @@
                  [metosin/reitit "0.5.18"
                   :exclusions [metosin/jsonista
                                org.clojure/core.rrb-vector]]
-                 [metosin/ring-http-response "0.9.3"]
-                 [com.taoensso/carmine "3.1.0"]
+                 [metosin/ring-http-response "0.9.3"
+                  :exclusions [ring/ring-core]]
+                 [com.taoensso/carmine "3.1.0"
+                  :exclusions [com.taoensso/encore]]
+                 [com.taoensso/encore "3.32.0"]
                  [com.nilenso/goose "0.3.0"]
                  [buddy/buddy-sign "3.4.333"]
                  [org.mariadb.jdbc/mariadb-java-client "3.0.8"]
                  [hikari-cp "3.0.0"]
-                 [dev.weavejester/ragtime "0.9.2"]
+                 [com.github.seancorfield/next.jdbc "1.3.847"]
+                 [dev.weavejester/ragtime.core "0.9.2"]
+                 [dev.weavejester/ragtime.next-jdbc "0.9.2"]
                  [com.github.seancorfield/honeysql "2.3.928"]
-                 [social.kitsune/csele "0.6.0"]]
+                 [social.kitsune/csele "0.7.0"]]
   :profiles {:dev {:source-paths ["dev"]
                    :dependencies [[org.clojure/tools.namespace "1.3.0"]]
                    :plugins [[lein-ancient "0.7.0"]]}})
