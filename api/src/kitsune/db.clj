@@ -4,20 +4,22 @@
             [hikari-cp.core :refer [make-datasource close-datasource]]
             [honey.sql :as sql]
             [next.jdbc]
-            [next.jdbc.result-set :as rs])
-  (:import [org.mariadb.jdbc
+            [next.jdbc.result-set :as rs]
+            [kitsune.lang :refer [qualify-sym]])
+  (:import [clojure.lang
+            ExceptionInfo]
+           [org.mariadb.jdbc
             MariaDbBlob]))
 
 (defstate datasource
   :start
+  ;; need to use jdbc-url because the hikari-cp hardcoded
+  ;; mariadb adapter class isn't right for this version
   (make-datasource {:jdbc-url "jdbc:mariadb://db:3306/kitsune"
                     :username "kitsune"
                     :password "whatever"})
   :stop
   (close-datasource datasource))
-
-(defn process-query
-  [])
 
 (defmacro defquery
   [name & decl]
@@ -46,13 +48,21 @@
             (try
               (let [start# (System/nanoTime)
                     sql-dsl# (do ~@body)
-                    text# (sql/format sql-dsl#)
+                    text# (sql/format
+                           sql-dsl#
+                           {:dialect :mysql
+                            :quoted-snake :true})
                     result# (next.jdbc/execute!
                              datasource#
                              text#
                              {:builder-fn rs/as-kebab-maps})]
-                (log/debug (format "%.3fms" (/ (- (System/nanoTime) start#) 1000000.0))
+                (log/debug (format "%.3fms %s"
+                                   (/ (- (System/nanoTime) start#) 1000000.0)
+                                   ~(str (qualify-sym name)))
                            (pr-str text#))
                 (if (= 1 (:limit sql-dsl#))
                   (first result#)
-                  result#)))))))))
+                  result#))
+              (catch ExceptionInfo ex#
+                (log/error (.getMessage ex#) (ex-data ex#))
+                (throw ex#)))))))))
