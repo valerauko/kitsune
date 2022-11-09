@@ -3,6 +3,7 @@
             [clojure.pprint :refer [pprint]]
             [jsonista.core :as json]
             [csele.headers :as headers]
+            [kitsune.cache :as cache]
             [kitsune.fed.conversions :as conv]
             [kitsune.fed.http :as http]
             [kitsune.fed.inbox.follow :refer [follow]]
@@ -23,10 +24,23 @@
         (log/debug (str uri " is " type))
         (case type
           ("Person" "Service")
-          (some-> object (conv/person->account) (upsert))
+          (some->> object
+                   (conv/person->account)
+                   (upsert)
+                   (into {})
+                   (cache/set uri))
 
           ;; else
           object)))))
+
+(defn find-actor
+  [actor]
+  (let [actor-id (or (:id actor) actor)]
+    (or (cache/get actor-id)
+        (some->> actor-id
+                 (find-by-uri)
+                 (into {})
+                 (cache/set actor-id)))))
 
 (defn check-sig
   "Checks HTTP header signature of the activity's request.
@@ -36,7 +50,7 @@
      {{actor :actor} :body} :parameters
      :as request} :request}]
   ; first see if the key in the db (if any) can validate the sig
-  (let [{:accounts/keys [public-key]} (find-by-uri actor)]
+  (let [{:accounts/keys [public-key]} (find-actor actor)]
     (if (and public-key (headers/verify request public-key))
       true
       ; if not then refetch the actor's key and use that to validate
@@ -62,19 +76,21 @@
          (empty? (find-by-uri actor)))
     (log/debug (str "Ignoring Delete of unknown user " object))
 
+    ;; consider how to deal with it if the actor is local actually
     (check-sig {:request request})
-    (let [remote-account (find-by-uri (or (:id actor) actor))]
-      (log/debug (str "Validated " type " (" id ")"))
+    (let [remote-account (find-actor actor)]
       (case type
         "Accept"
         (kitsune.lang/inspect type id body-params)
 
-        ; "Add"
+        "Add"
+        (kitsune.lang/inspect type id body-params)
 
         "Announce"
         (kitsune.lang/inspect type id body-params)
 
-        ; "Block"
+        "Block"
+        (kitsune.lang/inspect type id body-params)
 
         "Create"
         (kitsune.lang/inspect type id body-params)
@@ -82,7 +98,8 @@
         "Delete"
         (kitsune.lang/inspect type id body-params)
 
-        ; "Flag"
+        "Flag"
+        (kitsune.lang/inspect type id body-params)
 
         "Follow"
         (follow (... id object remote-account))
@@ -90,9 +107,11 @@
         "Like"
         (kitsune.lang/inspect type id body-params)
 
-        ; "Move"
+        "Move"
+        (kitsune.lang/inspect type id body-params)
 
-        ; "Read"
+        "Read"
+        (kitsune.lang/inspect type id body-params)
 
         "Reject"
         (kitsune.lang/inspect type id body-params)
@@ -100,7 +119,8 @@
         "Undo"
         (kitsune.lang/inspect type id body-params)
 
-        ; "Update"
+        "Update"
+        (kitsune.lang/inspect type id body-params)
 
         ;; else
         (log/warn "Unhandled activity type" type)))
