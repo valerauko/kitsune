@@ -21,7 +21,8 @@
                                          [:result method :data :swagger :produces]
                                          (get-in match
                                                  [:result :data :swagger :produces])))]
-      (if (= (:raw-format suggested) "*/*")
+      (if (or (= (:raw-format suggested) "*/*")
+              (empty? (:raw-format suggested)))
         (let [choice (or (produces (:format suggested))
                          (first produces))]
           (assoc (handler (assoc request :muuntaja/request choice))
