@@ -38,7 +38,7 @@
   [req]
   (-> req
       (select-keys [:server-port :server-name :remote-addr :uri :scheme :headers
-                    :protocol :request-method :body-params :parameters])
+                    :protocol :request-method :parameters])
       (assoc :body (.bytes (:body req)))))
 
 (defn inbox

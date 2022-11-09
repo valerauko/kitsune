@@ -16,12 +16,15 @@
   {(keyword "@context") ["https://www.w3.org/ns/activitystreams"]})
 
 (def default-content-type
-  "application/activity+json;charset=utf-8")
+  (str "application/ld+json;"
+       "profile=\"https://www.w3.org/ns/activitystreams\";"
+       "charset=utf-8"))
 
 (def default-user-agent
   "http-kit/2.6.0 (Kitsune/0.3.0)")
 
 (defn fetch-resource
+  "Only used for public resources (profiles etc)"
   [uri]
   (let [start (System/nanoTime)]
     (http/get
@@ -77,8 +80,40 @@
       :body body}
      (fn send-activity-callback
        [{:keys [error status] :as response}]
-       (let [log-msg (format "Activity POST to %s completed %s in %.3fms"
-                             inbox (or status "with network error")
+       (let [log-msg (format "POST %s to %s completed %s in %.3fms"
+                             (:type activity) inbox
+                             (or status "with network error")
+                             (/ (- (System/nanoTime) start) 1000000.0))]
+         (if error
+           (log/warn log-msg error)
+           (log/info log-msg))
+         response)))))
+
+(defn deref-uri
+  "Fetch a remote resource, signing the request as a local user.
+   This is the way fetching non-public resources is authenticated."
+  [{:keys [uri key-map headers content-type]
+    :or {headers (remove #(= % "digest") default-signed-headers)
+         content-type default-content-type}
+    :as options}]
+  (let [start (System/nanoTime)
+        target-uri (URI. uri)
+        request-headers {"host" (.getHost target-uri)
+                         "date" (header-time)
+                         "content-type" content-type
+                         "user-agent" default-user-agent}
+        signature (sign-request {:uri (.getPath target-uri)
+                                 :request-method :get
+                                 :headers request-headers}
+                                headers
+                                key-map)]
+    (http/get
+     uri
+     {:headers (assoc request-headers "signature" signature)}
+     (fn deref-callback
+       [{:keys [error status] :as response}]
+       (let [log-msg (format "GET %s completed %s in %.3fms"
+                             uri (or status "with network error")
                              (/ (- (System/nanoTime) start) 1000000.0))]
          (if error
            (log/warn log-msg error)
