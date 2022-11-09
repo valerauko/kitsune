@@ -9,7 +9,7 @@
       :as request}]
     (let [start (System/nanoTime)
           response (handler request)]
-      (log/info (format "Completed %d %s %s in %.3fms for %s"
+      (log/info (format "Processed %d %s %s in %.3fms for %s"
                         (get response :status 200)
                         (-> request-method (name) (.toUpperCase))
                         uri
