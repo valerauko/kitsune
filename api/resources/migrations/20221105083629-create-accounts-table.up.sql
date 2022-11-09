@@ -2,8 +2,9 @@
 
 create table if not exists accounts (
   id            bigint unsigned auto_increment primary key,
-  acct          varchar(250)    not null unique,
-  name          varchar(100)    not null,
+  name          varchar(250)    not null,
+  domain        varchar(250)    not null,
+  acct          varchar(1000)   generated always as (concat(name, "@", domain)) unique,
   uri           varchar(1000)   not null unique,
   inbox         varchar(1000)   not null,
   shared_inbox  varchar(1000)   not null,
