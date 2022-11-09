@@ -27,6 +27,8 @@
   (let [server (http/run-server
                 (wrap-async routes/handler)
                 {:port 3000
+                 :threads (* 2 (.availableProcessors (Runtime/getRuntime)))
+                 :queue-size 50
                  :max-body 44739243})]
     (log/info "API server running at :3000")
     server)
