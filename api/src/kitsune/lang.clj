@@ -21,3 +21,11 @@
           n (name s)
           aliases (ns-aliases *ns*)]
       (symbol (or (some-> aliases (get (symbol nsp)) ns-name str) nsp) n))))
+
+(defmacro inspect
+  [& syms]
+  `(do
+     ~@(map
+        (fn [sym]
+          `(println ~(name sym) (pr-str ~sym)))
+        syms)))
