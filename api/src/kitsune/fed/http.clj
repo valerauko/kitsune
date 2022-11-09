@@ -119,3 +119,9 @@
            (log/warn log-msg error)
            (log/info log-msg))
          response)))))
+
+(defn parse-json
+  [input]
+  (json/read-value
+   input
+   (json/object-mapper {:decode-key-fn keyword})))

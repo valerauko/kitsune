@@ -34,6 +34,13 @@
    :where [:= :uri (str uri)]
    :limit 1})
 
+(defquery delete-by-uri
+  [uri]
+  {:delete-from [:accounts]
+   :where [:= :uri (str uri)]
+   :limit 1
+   :returning [:id]})
+
 (defquery find-private-key
   [account-id]
   {:select [:private-key]

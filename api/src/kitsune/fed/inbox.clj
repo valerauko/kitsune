@@ -1,26 +1,20 @@
 (ns kitsune.fed.inbox
   (:require [clojure.tools.logging :as log]
             [clojure.pprint :refer [pprint]]
-            [jsonista.core :as json]
             [csele.headers :as headers]
             [kitsune.cache :as cache]
             [kitsune.fed.conversions :as conv]
             [kitsune.fed.http :as http]
             [kitsune.fed.inbox.follow :refer [follow]]
+            [kitsune.fed.inbox.delete :refer [delete]]
             [kitsune.db.account :refer [find-by-uri upsert]]
             [kitsune.lang :refer [...]]))
-
-(defn parse-json
-  [input]
-  (json/read-value
-   input
-   (json/object-mapper {:decode-key-fn keyword})))
 
 (defn fetch-and-store
   [uri]
   (let [{:keys [status body]} @(http/fetch-resource uri)]
     (when (<= 200 status 299)
-      (let [{:keys [type] :as object} (parse-json body)]
+      (let [{:keys [type] :as object} (http/parse-json body)]
         (log/debug (str uri " is " type))
         (case type
           ("Person" "Service")
@@ -73,12 +67,14 @@
          (or (= object actor)
              (and (= (:type object) "Tombstone")
                   (= (:id object) actor)))
-         (empty? (find-by-uri actor)))
+         (empty? (find-actor actor)))
     (log/debug (str "Ignoring Delete of unknown user " object))
 
-    ;; consider how to deal with it if the actor is local actually
+    ;; actor can be an array too...
+    ;; https://www.w3.org/TR/activitystreams-vocabulary/#dfn-actor
     (check-sig {:request request})
     (let [remote-account (find-actor actor)]
+      ;; consider how to deal with it if the actor is local actually
       (case type
         "Accept"
         (kitsune.lang/inspect type id body-params)
@@ -96,7 +92,7 @@
         (kitsune.lang/inspect type id body-params)
 
         "Delete"
-        (kitsune.lang/inspect type id body-params)
+        (delete body-params)
 
         "Flag"
         (kitsune.lang/inspect type id body-params)
