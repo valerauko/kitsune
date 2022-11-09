@@ -5,14 +5,16 @@
             [mount.core :refer [defstate start stop]]
             [camel-snake-kebab.core :refer [->kebab-case-string]]
             [next.jdbc :refer [with-transaction]]
+            [honey.sql :as sql]
             [csele.keys :refer [generate-keypair]]
             [kitsune.db :refer [defquery datasource]]
+            [kitsune.db.account :as acc-db]
             [kitsune.lang :refer [...]]
-            [kitsune.uri :refer [host url]]
-            [kitsune.fed.routes :as-alias fed])
+            [kitsune.uri :refer [host url]])
   (:import [java.time ZonedDateTime ZoneId]
            [java.time.format DateTimeFormatter]))
 
+(sql/set-dialect! :mysql)
 (set-refresh-dirs "dev" "src")
 
 (defn reload
@@ -39,17 +41,15 @@
     (.exec (Runtime/getRuntime) (str command up-name))
     (.exec (Runtime/getRuntime) (str command down-name))))
 
-(defquery -create-account
-  [name display-name public-key]
-  {:insert-into [:accounts]
-   :values [{:acct (str name "@" host)
-             :name name
-             :uri (url :kitsune.routes/profile {:name name})
-             :inbox (url ::fed/account-inbox {:name name})
-             :shared-inbox (url ::fed/shared-inbox)
-             :public-key public-key
-             :display-name display-name}]
-   :returning [:id]})
+(defn -create-account
+  [tx name display-name public-key]
+  (acc-db/upsert
+   tx
+   (... name public-key display-name
+        :acct (str name "@" host)
+        :uri (url :kitsune.routes/profile {:name name})
+        :inbox (url :kitsune.fed.routes/account-inbox {:name name})
+        :shared-inbox (url :kitsune.fed.routes/shared-inbox))))
 
 (defquery -create-user
   [account-id private-key]
@@ -59,7 +59,7 @@
 (defn create-account
   [{:keys [name display-name] :or {display-name name}}]
   (with-transaction [tx datasource]
-    (let [{:keys [private public]} (generate-keypair)
+    (let [{:keys [private public]} (generate-keypair 4096)
           [{id :accounts/id}] (-create-account tx name display-name public)]
       (-create-user tx id private)
       (... id name))))
