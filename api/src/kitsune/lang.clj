@@ -29,3 +29,14 @@
         (fn [sym]
           `(println ~(name sym) (pr-str ~sym)))
         syms)))
+
+(defmacro cond-let
+  [& clauses]
+  (when clauses
+    (let [head (first clauses)]
+      (list (if (vector? head) `if-let `if) head
+            (if (next clauses)
+              (second clauses)
+              (throw (IllegalArgumentException.
+                      "cond-let requires an even number of forms")))
+            (cons `cond-let (next (next clauses)))))))
