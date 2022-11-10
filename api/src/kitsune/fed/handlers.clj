@@ -2,10 +2,13 @@
   (:require [clojure.walk :refer [keywordize-keys]]
             [ring.util.http-response :refer [ok not-found]]
             [kitsune.async :refer [delayed]]
+            [kitsune.cache :as cache]
             [kitsune.db.account :refer [find-local-account]]
             [kitsune.uri :refer [url]]
             [kitsune.fed.inbox :as inbox]
-            [kitsune.fed.routes :as-alias routes]))
+            [kitsune.fed.routes :as-alias routes])
+  (:import [java.util
+            Date]))
 
 (def common-context
   {(keyword "@context") ["https://www.w3.org/ns/activitystreams",
@@ -42,6 +45,8 @@
       (assoc :body (.bytes (:body req)))))
 
 (defn inbox
-  [{:keys [body] :as req}]
-  (delayed (inbox/handle-activity (serialize-request req)))
+  [{{{:keys [id]} :body} :parameters :as req}]
+  (when-not (cache/get id)
+    (cache/set id (Date.))
+    (delayed (inbox/handle-activity (serialize-request req))))
   {:status 206})
