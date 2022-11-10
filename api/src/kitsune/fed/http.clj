@@ -29,6 +29,7 @@
   (let [start (System/nanoTime)]
     (http/get
      uri
+     ;; TODO: timeouts
      {:headers {"accept" default-content-type
                 "user-agent" default-user-agent}}
      (fn fetch-resource-callback
@@ -76,6 +77,7 @@
                                 key-map)]
     (http/post
      inbox
+     ;; TODO: timeouts
      {:headers (assoc request-headers "signature" signature)
       :body body}
      (fn send-activity-callback
@@ -109,6 +111,7 @@
                                 key-map)]
     (http/get
      uri
+     ;; TODO: timeouts
      {:headers (assoc request-headers "signature" signature)}
      (fn deref-callback
        [{:keys [error status] :as response}]

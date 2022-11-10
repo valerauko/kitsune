@@ -59,6 +59,7 @@
 (defn create-account
   [{:keys [name display-name] :or {display-name name}}]
   (with-transaction [tx datasource]
+    ;; think about automated key rotation (once a year? or so?)
     (let [{:keys [private public]} (generate-keypair 4096)
           [{id :accounts/id}] (-create-account tx name display-name public)]
       (-create-user tx id private)
