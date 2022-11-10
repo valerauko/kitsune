@@ -8,12 +8,19 @@
    :spec {:host "cache"
           :port 6379}})
 
+(defmacro ops
+  [& body]
+  `(car/wcar
+    cache-opts
+    :as-pipeline
+    ~@body))
+
 (defn get
   [k]
   (try
     (->> k
          (car/get)
-         (car/wcar cache-opts :as-pipeline)
+         (ops cache-opts :as-pipeline)
          (first))
     (catch Throwable ex
       (log/warn ex)
@@ -23,10 +30,7 @@
   [k v]
   (future
    (try
-     (car/wcar
-      cache-opts
-      :as-pipeline
-      (car/set k v))
+     (ops (car/set k v))
      (catch Throwable ex
        (log/warn ex)
        nil)))
