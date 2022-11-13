@@ -4,11 +4,12 @@
             [clojure.tools.namespace.repl :refer [refresh refresh-dirs set-refresh-dirs]]
             [mount.core :refer [defstate start stop]]
             [camel-snake-kebab.core :refer [->kebab-case-string]]
-            [next.jdbc :refer [with-transaction]]
+            [next.jdbc :as jdbc :refer [with-transaction]]
             [honey.sql :as sql]
             [csele.keys :refer [generate-keypair]]
             [kitsune.db :refer [defquery datasource]]
             [kitsune.db.account :as acc-db]
+            [kitsune.db.migration :refer [migrate rollback]]
             [kitsune.lang :refer [...]]
             [kitsune.uri :refer [host url]])
   (:import [java.time ZonedDateTime ZoneId]
