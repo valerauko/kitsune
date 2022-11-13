@@ -12,7 +12,7 @@ services:
       - maven:/root/.m2
       - ./api:/usr/local/kitsune/api
 
-  db:
+  mariadb:
     image: mariadb:10.9.3
     environment:
       MARIADB_USER: kitsune

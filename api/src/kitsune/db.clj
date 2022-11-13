@@ -15,7 +15,7 @@
   :start
   ;; need to use jdbc-url because the hikari-cp hardcoded
   ;; mariadb adapter class isn't right for this version
-  (make-datasource {:jdbc-url "jdbc:mariadb://db:3306/kitsune"
+  (make-datasource {:jdbc-url "jdbc:mariadb://mariadb:3306/kitsune"
                     :username "kitsune"
                     :password "whatever"})
   :stop
