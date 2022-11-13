@@ -31,7 +31,8 @@
      uri
      ;; TODO: timeouts
      {:headers {"accept" default-content-type
-                "user-agent" default-user-agent}}
+                "user-agent" default-user-agent}
+      :timeout 5000}
      (fn fetch-resource-callback
        [{:keys [error status] :as response}]
        (let [log-msg (format "Resource GET from %s completed %s in %.3fms"
@@ -79,6 +80,7 @@
      inbox
      ;; TODO: timeouts
      {:headers (assoc request-headers "signature" signature)
+      :timeout 5000
       :body body}
      (fn send-activity-callback
        [{:keys [error status] :as response}]
@@ -111,8 +113,8 @@
                                 key-map)]
     (http/get
      uri
-     ;; TODO: timeouts
-     {:headers (assoc request-headers "signature" signature)}
+     {:headers (assoc request-headers "signature" signature)
+      :timeout 5000}
      (fn deref-callback
        [{:keys [error status] :as response}]
        (let [log-msg (format "GET %s completed %s in %.3fms"
