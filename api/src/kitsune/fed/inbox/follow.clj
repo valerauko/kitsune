@@ -1,13 +1,15 @@
 (ns kitsune.fed.inbox.follow
   (:require [kitsune.async :refer [delayed]]
             [kitsune.db.account :refer [find-local-by-uri]]
+            [kitsune.db.follow :refer [create-follow]]
             [kitsune.fed.outbox.accept :refer [accept-follow]]
             [kitsune.lang :refer [...]]))
 
 (defn follow
-  [{:keys [id object remote-account]}]
-  (when-let [local-account (find-local-by-uri object)]
-    ;; store follow in db
-    ;; send accept if local auto-accepts follows
+  [{:keys [id object]
+    {follower-id :accounts/id :as remote-account} :remote-account}]
+  (when-let [{followed-id :accounts/id} (find-local-by-uri object)]
+    (create-follow (... follower-id followed-id))
+    ;; TODO: only send accept if local auto-accepts follows
     (delayed (accept-follow (... id object
                                  :actor (:accounts/uri remote-account))))))
