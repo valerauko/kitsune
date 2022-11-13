@@ -1,6 +1,6 @@
 -- resources/migrations/20221105083629-create-accounts-table.up.sql
 
-create table if not exists accounts (
+create table accounts (
   id            bigint unsigned auto_increment primary key,
   name          varchar(250)    not null,
   domain        varchar(250)    not null,

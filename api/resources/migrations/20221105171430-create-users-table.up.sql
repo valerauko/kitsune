@@ -1,6 +1,6 @@
 -- resources/migrations/20221105171430-create-users-table.up.sql
 
-create table if not exists users (
+create table users (
   id            bigint unsigned auto_increment primary key,
   account_id    bigint unsigned references accounts(id),
   private_key   text            not null,
