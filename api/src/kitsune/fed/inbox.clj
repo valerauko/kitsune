@@ -13,7 +13,7 @@
 (defn fetch-and-store
   [uri]
   (let [{:keys [status body]} @(http/fetch-resource uri)]
-    (when (<= 200 status 299)
+    (when (and status (<= 200 status 299))
       (let [{:keys [type] :as object} (http/parse-json body)]
         (log/debug (str uri " is " type))
         (case type
