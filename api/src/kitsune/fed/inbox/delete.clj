@@ -23,5 +23,9 @@
        (log/debug (str "Actor '" actor "' can't delete account '" account)))
 
      :else
+     ;; TODO: store Delete w/ actor in dragonfly for a while and
+     ;; if the object arrives some time later, check if actors match
+     ;; and if they do don't deal with the Create (such a timing mismatch
+     ;; will have to be considered with Updates too)
      (log/debug (str "Object '" object-id "' not found")))
     (log/debug "Unidentifiable object" object)))
