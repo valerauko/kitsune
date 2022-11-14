@@ -10,6 +10,9 @@
 (defprotocol Url
   (url [_] [_ _]))
 
+(defprotocol Match
+  (match [_]))
+
 (defn with-domain
   [path]
   (str scheme host path))

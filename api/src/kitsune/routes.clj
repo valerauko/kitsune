@@ -1,6 +1,7 @@
 (ns kitsune.routes
   (:require [muuntaja.core :as muuntaja]
             [reitit.coercion.malli :as coercion]
+            [reitit.core :refer [match-by-path]]
             [reitit.ring]
             [reitit.ring.coercion :refer [coerce-exceptions-middleware
                                           coerce-request-middleware
@@ -49,6 +50,12 @@
    ([kw] (uri/url kw {}))
    ([kw args]
     (uri/url-with-router router kw args))))
+
+(extend-protocol uri/Match
+  String
+  (uri/match
+   ([path]
+    (match-by-path router path))))
 
 (def handler
   (-> router
