@@ -5,14 +5,16 @@
   [handler]
   (fn logging-wrapper
     [{:keys [request-method uri remote-addr]
-      {fwd-for :X-Forwarded-For} :headers
+      {fwd-for "x-forwarded-for"
+       user-agent "user-agent"} :headers
       :as request}]
     (let [start (System/nanoTime)
           response (handler request)]
-      (log/info (format "Processed %d %s %s in %.3fms for %s"
+      (log/info (format "Processed %d %s %s in %.3fms for %s via %s"
                         (get response :status 200)
                         (-> request-method (name) (.toUpperCase))
                         uri
                         (/ (- (System/nanoTime) start) 1000000.0)
-                        (or fwd-for remote-addr)))
+                        (or fwd-for remote-addr)
+                        (or user-agent "unknown client")))
       response)))
