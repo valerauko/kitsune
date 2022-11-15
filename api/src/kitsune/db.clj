@@ -4,6 +4,7 @@
             [hikari-cp.core :refer [make-datasource close-datasource]]
             [honey.sql :as sql]
             [next.jdbc]
+            [next.jdbc.date-time]
             [next.jdbc.result-set :as rs]
             [kitsune.lang :refer [qualify-sym]])
   (:import [clojure.lang
