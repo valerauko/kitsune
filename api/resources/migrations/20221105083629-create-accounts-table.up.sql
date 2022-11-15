@@ -7,6 +7,7 @@ create table accounts (
   acct          varchar(1000)   generated always as (concat(name, "@", domain)) unique,
   uri           varchar(1000)   not null unique,
   inbox         varchar(1000)   not null,
+  outbox        varchar(1000)   not null,
   shared_inbox  varchar(1000)   not null,
   public_key    text,
   display_name  varchar(250),

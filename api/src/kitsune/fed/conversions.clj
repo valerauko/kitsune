@@ -14,11 +14,11 @@
       (str/reverse)))
 
 (defn person->account
-  [{:keys [id inbox]
+  [{:keys [id inbox outbox]
     display-name :name
     name :preferredUsername
     {public-key :publicKeyPem} :publicKey
     {shared-inbox :sharedInbox} :endpoints}]
   (let [domain (.getHost (URI. id))]
     (... :uri id :name (strict-trimmed name)
-         domain inbox shared-inbox public-key display-name)))
+         domain inbox outbox shared-inbox public-key display-name)))
