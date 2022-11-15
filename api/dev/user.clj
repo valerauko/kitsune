@@ -1,5 +1,6 @@
 (ns user
   (:require [clojure.java.io :as io]
+            [clojure.repl :refer [doc source]]
             [clojure.tools.logging :as log]
             [clojure.tools.namespace.repl :refer [refresh refresh-dirs set-refresh-dirs]]
             [mount.core :refer [defstate start stop]]
