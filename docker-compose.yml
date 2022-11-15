@@ -32,7 +32,7 @@ services:
       - rabbitmq:/var/lib/rabbitmq
 
   cache:
-    image: docker.dragonflydb.io/dragonflydb/dragonfly
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:v0.11.0
     volumes:
       - dragonfly:/data
     command:
