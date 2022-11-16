@@ -1,10 +1,12 @@
 (ns kitsune.fed.inbox
-  (:require [clojure.tools.logging :as log]
+  (:require [kitsune.logging :as log]
+            [com.brunobonacci.mulog :as u]
             [clojure.pprint :refer [pprint]]
             [csele.headers :as headers]
             [kitsune.cache :as cache]
             [kitsune.fed.conversions :as conv]
             [kitsune.fed.http :as http]
+            [kitsune.fed.inbox.create :refer [create-note]]
             [kitsune.fed.inbox.follow :refer [follow]]
             [kitsune.fed.inbox.delete :refer [delete]]
             [kitsune.db.account :refer [find-by-uri upsert]]
@@ -53,73 +55,94 @@
                :accounts/public-key
                (headers/verify request)))))
 
+(defmethod log/format-line ::receive
+  [{::keys [ua] {:keys [id type]} ::activity}]
+  ;; Received Delete (https://mstdn.io/users/dtoshi#delete) via http.rb/5.1.0 (Mastodon/4.0.2; +https://mstdn.io/)
+  (format "Received %s (%s) via %s" type id ua))
+
+(defmethod log/format-line ::unknown
+  [{::keys [activity object]}]
+  ;; Ignoring Delete (https://mstdn.io/users/dtoshi#delete) of Person (https://mstdn.io/users/dtoshi)
+  (format "Ignoring %s (%s) of %s" (:type activity) (:id activity) (:id object)))
+
+(defn object-map
+  [object]
+  (cond
+    (string? object) {:id object}
+    (map? object) (select-keys object [:id :type])
+    :else {:id object}))
+
 (defn handle-activity
   [{{{:keys [actor id object type] :as body-params} :body} :parameters
     {ua "user-agent"} :headers
     :as request}]
-  (log/debug (str "Received " type " (" id ") via " ua))
-  (cond
-    ;; if the object of the Delete is the actor then it's an account deletion
-    ;; and if the account isn't saved locally there's no key to verify the
-    ;; request either (since the user is deleted their key is gone too)
-    ;; so it'd be a waste to try to fetch it over http, just ignore
-    (and (= type "Delete")
-         (or (= object actor)
-             (and (= (:type object) "Tombstone")
-                  (= (:id object) actor)))
-         (empty? (find-actor actor)))
-    (log/debug (str "Ignoring Delete of unknown user " object))
+  (u/with-context {::activity (... type id)
+                   ::actor (or (:id actor) actor)}
+    (log/info ::receive ::ua ua)
+    (cond
+      ;; if the object of the Delete is the actor then it's an account deletion
+      ;; and if the account isn't saved locally there's no key to verify the
+      ;; request either (since the user is deleted their key is gone too)
+      ;; so it'd be a waste to try to fetch it over http, just ignore
+      (and (= type "Delete")
+           (or (= object actor)
+               (and (= (:type object) "Tombstone")
+                    (= (:id object) actor)))
+           (empty? (find-actor actor)))
+      (log/trace ::unknown ::object (object-map object))
 
-    ;; actor can be an array too...
-    ;; https://www.w3.org/TR/activitystreams-vocabulary/#dfn-actor
-    (check-sig {:request request})
-    (let [remote-account (find-actor actor)]
-      ;; consider how to deal with it if the actor is local actually
-      (case type
-        "Accept"
-        (kitsune.lang/inspect type id body-params)
+      ;; actor can be an array too...
+      ;; https://www.w3.org/TR/activitystreams-vocabulary/#dfn-actor
+      (check-sig {:request request})
+      (let [remote-account (find-actor actor)]
+        ;; consider how to deal with it if the actor is local actually
+        (case type
+          "Accept"
+          (kitsune.lang/inspect type id body-params)
 
-        "Add"
-        (kitsune.lang/inspect type id body-params)
+          "Add"
+          (kitsune.lang/inspect type id body-params)
 
-        "Announce"
-        (kitsune.lang/inspect type id body-params)
+          "Announce"
+          (kitsune.lang/inspect type id body-params)
 
-        "Block"
-        (kitsune.lang/inspect type id body-params)
+          "Block"
+          (kitsune.lang/inspect type id body-params)
 
-        "Create"
-        (kitsune.lang/inspect type id body-params)
+          "Create"
+          (if (= (:type object) "Note")
+            (create-note remote-account body-params)
+            (log/debug ::unknown ::object (object-map object)))
 
-        "Delete"
-        (delete body-params)
+          "Delete"
+          (delete body-params)
 
-        "Flag"
-        (kitsune.lang/inspect type id body-params)
+          "Flag"
+          (kitsune.lang/inspect type id body-params)
 
-        "Follow"
-        (follow (... id object remote-account))
+          "Follow"
+          (follow (... id object remote-account))
 
-        "Like"
-        (kitsune.lang/inspect type id body-params)
+          "Like"
+          (kitsune.lang/inspect type id body-params)
 
-        "Move"
-        (kitsune.lang/inspect type id body-params)
+          "Move"
+          (kitsune.lang/inspect type id body-params)
 
-        "Read"
-        (kitsune.lang/inspect type id body-params)
+          "Read"
+          (kitsune.lang/inspect type id body-params)
 
-        "Reject"
-        (kitsune.lang/inspect type id body-params)
+          "Reject"
+          (kitsune.lang/inspect type id body-params)
 
-        "Undo"
-        (kitsune.lang/inspect type id body-params)
+          "Undo"
+          (kitsune.lang/inspect type id body-params)
 
-        "Update"
-        (kitsune.lang/inspect type id body-params)
+          "Update"
+          (kitsune.lang/inspect type id body-params)
 
-        ;; else
-        (log/warn "Unhandled activity type" type)))
+          ;; else
+          (log/warn ::unknown ::object (object-map object))))
 
-    :else
-    (log/debug (str "Couldn't validate " type " (" id ")"))))
+      :else
+      (log/debug ::invalid))))

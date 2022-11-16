@@ -8,6 +8,7 @@
                  [org.clojure/tools.logging "1.2.4"]
                  [org.clojure/data.xml "0.2.0-alpha7"]
                  [ch.qos.logback/logback-classic "1.4.4"]
+                 [com.brunobonacci/mulog "0.9.0"]
                  [mount "0.1.16"]
                  [http-kit "2.6.0"] ;; update fed/http UA if changed
                  [metosin/jsonista "0.3.6"]

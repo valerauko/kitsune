@@ -1,5 +1,6 @@
 (ns kitsune.async
-  (:require [clojure.tools.logging :as log]
+  (:require [kitsune.logging :as log]
+            [com.brunobonacci.mulog :as u]
             [mount.core :refer [defstate]]
             [goose.brokers.rmq.broker :as rmq]
             [goose.client]
@@ -26,16 +27,22 @@
         (merge {:broker producer} ~opts)
         '~(qualify-sym func) ~@args)))))
 
+(defmethod log/format-line ::complete
+  [{::keys [job runtime]}]
+  ;; Processed job kitsune.fed.inbox/handle-activity in 4.362ms
+  (format "Processed job %s in %.3fms" job runtime))
+
 (defn job-logger
   [invoke]
   (fn logger-middleware
     [opts {:keys [id execute-fn-sym] :as job}]
-    (let [start (System/nanoTime)
-          result (invoke opts job)]
-      (log/info (format "Processed job %s (%s) in %.3fms"
-                        id execute-fn-sym
-                        (/ (- (System/nanoTime) start) 1000000.0)))
-      result)))
+    (u/with-context {::log/context-id id}
+      (let [start (System/nanoTime)
+            result (invoke opts job)]
+        (log/info ::complete
+                  ::job execute-fn-sym
+                  ::runtime (/ (- (System/nanoTime) start) 1000000.0))
+        result))))
 
 (defstate consumer
   :start
