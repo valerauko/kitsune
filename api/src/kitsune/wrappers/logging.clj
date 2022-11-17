@@ -5,10 +5,10 @@
             UUID]))
 
 (defmethod log/format-line ::request
-  [{::keys [status method uri remote-address user-agent runtime]}]
+  [{::keys [status method uri remote-address user-agent] runtime :mulog/duration}]
   ;; Processed 206 POST /api/fed/v1/inbox in 3.831ms for 136.243.7.114 via http.rb/5.1.0 (Mastodon/4.0.2; +https://mastodon.social/)
   (format "Processed %d %s %s in %.3fms for %s via %s"
-          status method uri runtime remote-address user-agent))
+          status method uri (/ runtime 1000000.0) remote-address user-agent))
 
 (defn wrap-logging
   [handler]
@@ -18,13 +18,12 @@
        user-agent "user-agent"} :headers
       :as request}]
     (u/with-context {::log/context-id (str (UUID/randomUUID))}
-      (let [start (System/nanoTime)
-            response (handler request)]
-        (log/info ::request
-                  ::status (get response :status 200)
-                  ::method (-> request-method (name) (.toUpperCase))
-                  ::uri uri
-                  ::runtime (/ (- (System/nanoTime) start) 1000000.0)
-                  ::remote-address (or fwd-for remote-addr)
-                  ::user-agent (or user-agent "unknown client"))
-        response))))
+      (u/trace ::request
+       {:pairs
+        [::level :info
+         ::method (-> request-method (name) (.toUpperCase))
+         ::uri uri
+         ::remote-address (or fwd-for remote-addr)
+         ::user-agent (or user-agent "unknown client")]
+        :capture (fn log-capture [res] {::status (get res :status 200)})}
+       (handler request)))))

@@ -27,11 +27,12 @@
   (pr-str line))
 
 (defn format-event
-  [{::keys [level context-id]
-    :mulog/keys [timestamp]
+  [{::keys [level]
+    :mulog/keys [timestamp root-trace trace-id]
     :as line}]
   (format "%tY/%1$tm/%1$td %1$tT.%1$tL [%s] [%s] %s"
-          timestamp context-id (-> level name (.toUpperCase))
+          timestamp (or root-trace trace-id)
+          (-> level (or :debug) name (.toUpperCase))
           (format-line line)))
 
 (defn log-xform
@@ -50,7 +51,7 @@
 
       (publish-delay
        [_]
-       200)
+       50)
 
       (publish
        [_ buffer]
@@ -60,7 +61,8 @@
 
 (defstate logger
   :start
-  (u/start-publisher! {:type :custom
+  (u/start-publisher! ; {:type :console}
+                      {:type :custom
                        :fqn-function "kitsune.logging/publisher"
                        :transform log-xform})
   :stop
