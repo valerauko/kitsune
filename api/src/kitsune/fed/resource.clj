@@ -9,7 +9,7 @@
 
 (defmulti -store-resource
   (fn -store-resource-dispatch [object]
-    (some-> object (:type) (str) (.toLowerCase) (keyword))))
+    (some->> object (:type) (str) (.toLowerCase) (keyword (str *ns*)))))
 
 (defmethod -find-resource :default
   -find-unknown

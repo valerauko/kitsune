@@ -2,15 +2,15 @@
   (:require [clojure.instant :refer [read-instant-date]]
             [kitsune.db.account :as account]
             [kitsune.db.note :as note]
-            [kitsune.fed.resource
+            [kitsune.fed.resource :as res
              :refer [find-or-fetch -find-resource -store-resource]]))
 
-(defmethod -find-resource :note
+(defmethod -find-resource ::res/note
   -find-note
   [_ uri]
   (note/find-by-uri uri))
 
-(defmethod -store-resource :note
+(defmethod -store-resource ::res/note
   -store-note
   [{owner-id :attributedTo :as object}]
   (when-let [owner (find-or-fetch :person owner-id)]

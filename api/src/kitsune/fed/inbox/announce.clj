@@ -6,7 +6,7 @@
 
 (defn announce-note
   [remote-account {:keys [published id] object-id :object}]
-  (if-let [note (res/find-or-fetch :note object-id)]
+  (if-let [note (res/find-or-fetch ::res/note object-id)]
     (boost/create {:uri id
                    :account-id (:accounts/id remote-account)
                    :note-id (:notes/id note)

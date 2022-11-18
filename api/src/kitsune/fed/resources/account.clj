@@ -2,7 +2,8 @@
   (:refer-clojure :exclude [find])
   (:require [kitsune.db.account :as account]
             [kitsune.fed.conversions :as conv]
-            [kitsune.fed.resource :refer [-find-resource -store-resource]]))
+            [kitsune.fed.resource :as res
+             :refer [-find-resource -store-resource]]))
 
 (defn store
   [res]
@@ -14,22 +15,17 @@
   [id]
   (account/find-by-uri id))
 
-(defmethod -store-resource :person
+(derive ::res/person ::res/account)
+(derive ::res/service ::res/account)
+
+(defmethod -store-resource ::res/account
   -store-person
   [res]
-  (store res))
+  (->> res
+       (conv/person->account)
+       (account/upsert)))
 
-(defmethod -store-resource :service
-  -store-service
-  [res]
-  (store res))
-
-(defmethod -find-resource :person
+(defmethod -find-resource ::res/account
   -find-person
   [_ id]
-  (find id))
-
-(defmethod -find-resource :service
-  -find-person
-  [_ id]
-  (find id))
+  (account/find-by-uri id))

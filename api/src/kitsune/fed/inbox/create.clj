@@ -7,7 +7,7 @@
 (defn create-note
   [remote-account {:keys [object] :as activity}]
   (if (= (:attributedTo object) (:accounts/uri remote-account))
-    (if (some->> object (:id) (res/find-resource :note))
+    (if (some->> object (:id) (res/find-resource ::res/note))
       (log/debug ::exists ::note (:id object))
       ;; TODO: figure out how to fetch and store whole convo threads
       ;; idea: if inReplyTo is not empty but it's not in db, then generate
