@@ -20,7 +20,7 @@
     (u/with-context {::log/context-id (str (UUID/randomUUID))}
       (u/trace ::request
        {:pairs
-        [::level :info
+        [::log/level :info
          ::method (-> request-method (name) (.toUpperCase))
          ::uri uri
          ::remote-address (or fwd-for remote-addr)

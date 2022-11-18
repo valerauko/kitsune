@@ -29,7 +29,6 @@
   (let [start (System/nanoTime)]
     (http/get
      uri
-     ;; TODO: timeouts
      {:headers {"accept" default-content-type
                 "user-agent" default-user-agent}
       :timeout 5000}
@@ -40,7 +39,7 @@
                              (/ (- (System/nanoTime) start) 1000000.0))]
          (if error
            (log/warn log-msg error)
-           (log/info log-msg))
+           (log/debug log-msg))
          response)))))
 
 (def default-signed-headers

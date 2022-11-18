@@ -38,7 +38,8 @@
     [opts {:keys [id execute-fn-sym] :as job}]
     (u/with-context {::log/context-id id}
       (u/trace ::job
-       {:pairs [::job execute-fn-sym]}
+       {:pairs [::job execute-fn-sym
+                ::log/level :info]}
        (invoke opts job)))))
 
 (defstate consumer
