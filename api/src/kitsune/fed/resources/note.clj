@@ -13,7 +13,7 @@
 (defmethod -store-resource ::res/note
   -store-note
   [{owner-id :attributedTo :as object}]
-  (when-let [owner (find-or-fetch :person owner-id)]
+  (when-let [owner (find-or-fetch ::res/account owner-id)]
     (let [{uri :id url :url text :content spoiler :summary
            :or {url uri}} object]
       (note/create

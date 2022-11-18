@@ -9,7 +9,11 @@
 
 (defmulti -store-resource
   (fn -store-resource-dispatch [object]
-    (some->> object (:type) (str) (.toLowerCase) (keyword (str *ns*)))))
+    (some->> object
+             (:type)
+             (str)
+             (.toLowerCase)
+             (keyword "kitsune.fed.resource"))))
 
 (defmethod -find-resource :default
   -find-unknown
