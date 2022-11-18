@@ -49,4 +49,4 @@
   (when-not (cache/get id)
     (cache/set id (Date.))
     (delayed (inbox/handle-activity (serialize-request req))))
-  {:status 206})
+  {:status 202})
