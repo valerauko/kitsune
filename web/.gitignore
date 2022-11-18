@@ -1,0 +1,11 @@
+node_modules
+public/js
+public/css
+public/images
+.shadow-cljs
+.nrepl-port
+.calva
+.clj-kondo/.cache
+yarn-error.log
+report.html
+target

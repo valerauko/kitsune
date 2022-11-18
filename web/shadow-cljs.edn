@@ -1,0 +1,43 @@
+{:nrepl {:port 8777}
+
+ :source-paths ["dev" "src" "test"]
+
+ :dependencies
+ [[reagent "1.1.1"]
+  [re-frame "1.3.0"]
+  [com.cognitect/transit-cljs "0.8.280"]
+  [tongue "0.4.4"]
+  [metosin/reitit "0.5.18"]
+
+  [com.thheller/shadow-css "0.4.0"]
+  [day8/shadow-git-inject "0.0.5"]
+  [clj-kondo "2022.10.14"]]
+
+ :dev-http
+ {8280 "public"
+  8290 "target/browser-test"}
+
+ :builds
+ {:app
+  {:target     :browser
+   :output-dir "public/js"
+   :asset-path "/js"
+   :modules
+   {:app {:init-fn kitsune.core/remount}}
+   :devtools
+   {:preloads []
+    :devtools-url "http://localhost:9630"}
+   :dev
+   {:compiler-options
+    {:closure-defines
+     {re-com.config/root-url-for-compiler-output
+      "http://localhost:8290/js/compiled/app/cljs-runtime/"}}}}
+  :browser-test
+  {:target    :browser-test
+   :ns-regexp "-test$"
+   :runner-ns shadow.test.browser
+   :test-dir  "target/browser-test"}
+  :karma-test
+  {:target    :karma
+   :ns-regexp "-test$"
+   :output-to "target/karma-test.js"}}}

@@ -7,10 +7,23 @@ services:
     command: lein repl :headless :host 0.0.0.0 :port 42001
     ports:
       - 42001:42001
-      - 3000:3000
     volumes:
       - maven:/root/.m2
       - ./api:/usr/local/kitsune/api
+
+  web:
+    build:
+      context: web/dev/image
+    working_dir: /usr/local/kitsune/web
+    ports:
+      - 8280:8280
+      - 8290:8290
+      - 9630:9630
+    volumes:
+      - web_maven:/root/.m2
+      - node_modules:/usr/local/node_modules
+      - ./web:/usr/local/kitsune/web
+    command: yarn dev
 
   mariadb:
     image: mariadb:10.9.3
@@ -41,6 +54,17 @@ services:
       - "--hz"
       - "1"
 
+  gateway:
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 3000:3000
+    networks:
+      default:
+        aliases:
+          - kitsune.loca.lt
+    image: nginx:1.23.1-alpine
+
   swagger:
     image: swaggerapi/swagger-ui:v4.15.2
     environment:
@@ -48,7 +72,7 @@ services:
 
   localtunnel:
     image: efrecon/localtunnel
-    command: --local-host api --port 3000 --subdomain kitsune
+    command: --local-host gateway --port 3000 --subdomain kitsune
 
   adminer:
     image: adminer
@@ -60,3 +84,5 @@ volumes:
   rabbitmq:
   dragonfly:
   maven:
+  web_maven:
+  node_modules:
