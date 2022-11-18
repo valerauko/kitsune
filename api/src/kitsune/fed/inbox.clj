@@ -6,9 +6,11 @@
             [kitsune.cache :as cache]
             [kitsune.fed.conversions :as conv]
             [kitsune.fed.http :as http]
+            [kitsune.fed.inbox.announce :refer [announce-note]]
             [kitsune.fed.inbox.create :refer [create-note]]
             [kitsune.fed.inbox.follow :refer [follow]]
             [kitsune.fed.inbox.delete :refer [delete]]
+            [kitsune.fed.inbox.undo :refer [undo-announce]]
             [kitsune.db.account :refer [find-by-uri upsert]]
             [kitsune.lang :refer [...]]))
 
@@ -104,7 +106,7 @@
           (kitsune.lang/inspect type id body-params)
 
           "Announce"
-          (kitsune.lang/inspect type id body-params)
+          (announce-note remote-account body-params)
 
           "Block"
           (kitsune.lang/inspect type id body-params)
@@ -136,7 +138,9 @@
           (kitsune.lang/inspect type id body-params)
 
           "Undo"
-          (kitsune.lang/inspect type id body-params)
+          (if (= (:type object) "Announce")
+            (undo-announce remote-account body-params)
+            (log/debug ::unknown ::object (object-map object)))
 
           "Update"
           (kitsune.lang/inspect type id body-params)
