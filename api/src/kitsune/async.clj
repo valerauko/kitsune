@@ -28,18 +28,24 @@
         '~(qualify-sym func) ~@args)))))
 
 (defmethod log/format-line ::job
-  [{::keys [job] runtime :mulog/duration}]
+  [{::keys [job processing-time] runtime :mulog/duration}]
   ;; Processed job kitsune.fed.inbox/handle-activity in 4.362ms
-  (format "Processed job %s in %.3fms" job (/ runtime 1000000.0)))
+  (let [total-time (/ processing-time 1000.0)]
+    (format "Processed job %s in %.3fms (total %02.0f:%06.3f)"
+            job (/ runtime 1000000.0)
+            (quot total-time 60) (mod total-time 60))))
 
 (defn job-logger
   [invoke]
   (fn logger-middleware
-    [opts {:keys [id execute-fn-sym] :as job}]
+    [opts {:keys [id execute-fn-sym enqueued-at] :as job}]
     (u/with-context {::log/context-id id}
       (u/trace ::job
        {:pairs [::job execute-fn-sym
-                ::log/level :info]}
+                ::log/level :info]
+        :capture (fn record-time [_]
+                   {::processing-time
+                    (- (System/currentTimeMillis) enqueued-at)})}
        (invoke opts job)))))
 
 (defstate consumer
