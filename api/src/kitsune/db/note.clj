@@ -1,11 +1,21 @@
 (ns kitsune.db.note
   (:require [kitsune.db :refer [defquery]]))
 
-  ;; TODO
-(defn find-by-uri
-  [_]
-  nil)
+(defquery find-by-uri
+  [uri]
+  {:select [:*]
+   :from [:notes]
+   :where [:= :uri (str uri)]
+   :limit 1})
 
-(defn delete-by-uri
-  [_]
-  nil)
+(defquery delete-by-uri
+  [uri]
+  {:delete-from [:notes]
+   :where [:= :uri (str uri)]
+   :limit 1})
+
+(defquery create
+  [note]
+  {:insert-into [:notes]
+   :values [note]
+   :returning [:*]})
