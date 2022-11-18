@@ -2,7 +2,7 @@
 
 create table notes (
   id           bigint unsigned auto_increment primary key,
-  uri          varchar(1000)   not null comment 'ActivityPub URI',
+  uri          varchar(1000)   not null unique comment 'ActivityPub URI',
   url          varchar(1000)   not null comment 'Human-readable URI (probably HTML)',
   content      text(1000),
   spoiler      text(200),
