@@ -1,5 +1,7 @@
 (ns kitsune.fed.routes
-  (:require [kitsune.fed.handlers :as handlers]))
+  (:require [kitsune.fed.handlers :as handlers]
+            [kitsune.fed.resources.account]
+            [kitsune.fed.resources.note]))
 
 (def routes
   ["/api/fed"
