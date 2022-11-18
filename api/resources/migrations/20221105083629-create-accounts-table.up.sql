@@ -2,7 +2,7 @@
 
 create table accounts (
   id            bigint unsigned auto_increment primary key,
-  name          varchar(250)    not null,
+  name          varchar(250)    not null index,
   domain        varchar(250)    not null,
   acct          varchar(1000)   generated always as (concat(name, "@", domain)) unique,
   uri           varchar(1000)   not null unique,
