@@ -1,10 +1,11 @@
 (ns kitsune.core
-  (:require [clojure.tools.logging :as log]
-            [mount.core :refer [defstate start stop]]
+  (:require [mount.core :refer [defstate start stop]]
             [kitsune.db]
             [kitsune.db.migration :refer [migrate rollback]]
-            [org.httpkit.server :as http]
-            [kitsune.routes :as routes]))
+            [kitsune.lang :refer [...]]
+            [kitsune.logging :as log]
+            [kitsune.routes :as routes]
+            [org.httpkit.server :as http]))
 
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* :warn-on-boxed)
@@ -22,24 +23,35 @@
           (http/close channel)))
       {:body channel})))
 
+(derive ::started ::server-event)
+(derive ::stopping ::server-event)
+
+(defmethod log/format-line ::server-event
+  [{event :mulog/event-name}]
+  (->> event (keyword) (name) (format "Server %s...")))
+
 (defstate http-server
   :start
-  (let [server (http/run-server
+  (let [port 3000
+        threads (* 2 (.availableProcessors (Runtime/getRuntime)))
+        queue-size 50
+        max-body 44739243
+        server (http/run-server
                 (wrap-async routes/handler)
-                {:port 3000
-                 :threads (* 2 (.availableProcessors (Runtime/getRuntime)))
-                 :queue-size 50
-                 :max-body 44739243})]
-    (log/info "API server running at :3000")
+                (... port threads queue-size max-body))]
+    (log/info ::started
+              ::port port
+              ::threads threads
+              ::queue queue-size
+              ::max-body max-body)
     server)
   :stop
   (do
-    (log/info "Stopping server...")
+    (log/info ::stopping)
     (http-server :timeout 1000)))
 
 (defn shutdown
   [& _]
-  (log/info "Shutting down...")
   (stop))
 
 (defn -main
