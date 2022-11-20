@@ -1,6 +1,5 @@
 (ns kitsune.routes.events
   (:require [re-frame.core :as rf]
-            [kitsune.events :as app]
             [kitsune.routes :as-alias routes]
             [kitsune.routes.effects :as fx]
             [reitit.frontend.controllers :as router]))
@@ -9,6 +8,11 @@
  ::push-state
  (fn [_ [_ & route]]
    {::fx/push-state route}))
+
+(rf/reg-event-fx
+ ::pop-state
+ (fn [_ _]
+   {::fx/pop-state {}}))
 
 (rf/reg-event-db
  ::navigated
