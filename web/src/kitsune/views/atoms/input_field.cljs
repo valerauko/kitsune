@@ -8,7 +8,7 @@
         :border-radius "6px"}
        [:focus-within
         {:border "1px solid #fe6601"
-          :outline "1px solid #fe6601"}]))
+         :outline "1px solid #fe6601"}]))
 
 (def $fix
   (css {:min-width "15px"
