@@ -4,6 +4,7 @@
             [reitit.frontend]
             [reitit.frontend.easy :as easy]
             [kitsune.auth.scopes :as scope]
+            [kitsune.feeds.events :as feeds]
             [kitsune.routes.events :as events]
             [kitsune.uri :as uri]
             [kitsune.views.layouts.welcome :as layouts.welcome]
@@ -16,7 +17,7 @@
     :scope ::scope/login}
    [""
     {:name ::uri/root
-     :redirect-to ::uri/timeline}]
+     :redirect-to [::uri/feeds {:feeds "home"}]}]
    ["welcome/"
     {:scope ::scope/logout
      :layout #'layouts.welcome/view}
@@ -30,15 +31,16 @@
      {:name ::uri/register
       :view #'pages.welcome/register}]]
    ["timeline"
-    {:view #'pages.timeline/timeline}
-    [""
-     {:name ::uri/timeline}]
+    ["" {:redirect-to [::uri/feeds {:feeds "home"}]}]
     ["/"
-     [""]
+     ["" {:redirect-to [::uri/feeds {:feeds "home"}]}]
      [":feeds"
       {:name ::uri/feeds
        :parameters {:path {:feeds string?}}
-       :controllers {:params #(-> % :parameters :path)}}]]]])
+       :controllers [{:params #(-> % :parameters :path)
+                      :start #(rf/dispatch [:kitsune.feeds.events/set-feeds
+                                            (:feeds %)])}]
+       :view #'pages.timeline/timeline}]]]])
 
 (def router
   (reitit.frontend/router routes))

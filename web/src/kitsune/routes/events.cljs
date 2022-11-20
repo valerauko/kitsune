@@ -6,7 +6,7 @@
 
 (rf/reg-event-fx
  ::push-state
- (fn [_ [_ & route]]
+ (fn [_ [_ route]]
    {::fx/push-state route}))
 
 (rf/reg-event-fx

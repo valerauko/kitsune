@@ -35,12 +35,12 @@
     [button
      {:value "Sign up"
       :animated true
-      :on-click #(rf/dispatch [::route/push-state ::uri/register])}]
+      :on-click #(rf/dispatch [::route/push-state [::uri/register]])}]
     [button
      {:primary true
       :animated true
       :value "Log in"
-      :on-click #(rf/dispatch [::route/push-state ::uri/login])}]]])
+      :on-click #(rf/dispatch [::route/push-state [::uri/login]])}]]])
 
 (defn login
   [_]
@@ -68,7 +68,7 @@
     [button
      {:type "reset"
       :value "Back"
-      :on-click #(rf/dispatch [::route/push-state ::uri/welcome])}]
+      :on-click #(rf/dispatch [::route/push-state [::uri/welcome]])}]
     [button
      {:primary true
       :animated true
@@ -118,7 +118,7 @@
     [button
      {:type "reset"
       :value "Back"
-      :on-click #(rf/dispatch [::route/push-state ::uri/welcome])}]
+      :on-click #(rf/dispatch [::route/push-state [::uri/welcome]])}]
     [button
      {:primary true
       :animated true

@@ -31,8 +31,8 @@
        :else
        (if user
          (if (isa? scope ::scope/logout)
-           (rf/dispatch [::event/push-state ::uri/timeline])
+           (rf/dispatch [::event/push-state [::uri/feeds {:feeds "home"}]])
            wrapped-view)
          (if (isa? scope ::scope/login)
-           (rf/dispatch [::event/push-state ::uri/welcome])
+           (rf/dispatch [::event/push-state [::uri/welcome]])
            wrapped-view))))])
