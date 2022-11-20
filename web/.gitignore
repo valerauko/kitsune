@@ -1,6 +1,6 @@
 node_modules
 public/js
-public/css
+public/css/ui.css
 public/images
 .shadow-cljs
 .nrepl-port
