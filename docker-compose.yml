@@ -18,6 +18,7 @@ services:
     ports:
       - 8280:8280
       - 8290:8290
+      - 8777:8777
       - 9630:9630
     volumes:
       - web_maven:/root/.m2

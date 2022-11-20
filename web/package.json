@@ -1,5 +1,5 @@
 {
-  "name": "ichimai",
+  "name": "kitsune",
   "version": "0.1.0",
   "scripts": {
     "dev": "yarn && yarn clean && shadow-cljs run kitsune.dev/watch",

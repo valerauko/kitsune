@@ -23,7 +23,7 @@
    :output-dir "public/js"
    :asset-path "/js"
    :modules
-   {:app {:init-fn kitsune.core/remount}}
+   {:app {:init-fn kitsune.core/init}}
    :devtools
    {:preloads []
     :devtools-url "http://localhost:9630"}
