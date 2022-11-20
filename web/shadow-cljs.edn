@@ -9,7 +9,7 @@
   [tongue "0.4.4"]
   [metosin/reitit "0.5.18"]
 
-  [com.thheller/shadow-css "0.4.0"]
+  [com.thheller/shadow-css "0.4.2"]
   [day8/shadow-git-inject "0.0.5"]
   [clj-kondo "2022.10.14"]]
 
