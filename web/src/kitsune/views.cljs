@@ -34,5 +34,5 @@
            (rf/dispatch [::event/push-state ::uri/timeline])
            wrapped-view)
          (if (isa? scope ::scope/login)
-           (rf/dispatch [::event/push-state ::uri/login])
+           (rf/dispatch [::event/push-state ::uri/welcome])
            wrapped-view))))])

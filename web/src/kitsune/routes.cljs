@@ -7,7 +7,7 @@
             [kitsune.routes.events :as events]
             [kitsune.uri :as uri]
             [kitsune.views.layouts.welcome :as layouts.welcome]
-            [kitsune.views.pages.login :as pages.login]
+            [kitsune.views.pages.welcome :as pages.welcome]
             [kitsune.views.pages.timeline :as pages.timeline]))
 
 (def routes
@@ -21,12 +21,14 @@
     {:scope ::scope/logout
      :layout #'layouts.welcome/view}
     [""
-     {:name ::uri/welcome}]
+     {:name ::uri/welcome
+      :view #'pages.welcome/welcome}]
     ["login"
      {:name ::uri/login
-      :view #'pages.login/view}]
+      :view #'pages.welcome/login}]
     ["register"
-     {:name ::uri/register}]]
+     {:name ::uri/register
+      :view #'pages.welcome/register}]]
    ["timeline"
     {:view #'pages.timeline/timeline}
     [""
