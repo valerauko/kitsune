@@ -21,22 +21,3 @@
                        (js/localStorage.getItem)
                        (t/read decoder))]
      (assoc state :persisted data))))
-
-(rf/reg-fx
- ::http
- (fn [{:keys [path method on-success on-error opts]
-       :or {opts {}}}]
-   (-> (js/fetch
-        (str "/api" path)
-        (clj->js (merge {:redirect :error
-                         :signal (js/AbortSignal.timeout 500)
-                         :cache :reload
-                         :credentials :omit}
-                        opts)))
-       (.then (fn [response]
-                (if (<= 200 (.-status response) 299)
-                  (.then
-                   (.json response)
-                   #(rf/dispatch (conj on-success %)))
-                  (rf/dispatch (conj on-error response)))))
-       (.catch #(rf/dispatch (conj on-error %))))))
