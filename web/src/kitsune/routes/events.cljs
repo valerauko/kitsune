@@ -18,10 +18,8 @@
  ::navigated
  (fn [db [_ new-match]]
    (let [old-match (::routes/current-route db)]
-     (if-let [old-controllers (:controllers old-match)]
-       (let [controllers (router/apply-controllers
-                          (:controllers old-match)
-                          new-match)]
-         (assoc db ::routes/current-route
-                        (assoc new-match :controllers controllers)))
-       (assoc db ::routes/current-route new-match)))))
+     (let [controllers (router/apply-controllers
+                        (:controllers old-match)
+                        new-match)]
+       (assoc db ::routes/current-route
+              (assoc new-match :controllers controllers))))))
