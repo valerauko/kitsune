@@ -6,4 +6,4 @@
  ::initialize-db
  [(rf/inject-cofx ::fx/persisted)]
  (fn [{:keys [persisted]}]
-   {:db {:days persisted}}))
+   {:db {:data persisted}}))
