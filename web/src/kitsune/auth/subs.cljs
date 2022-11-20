@@ -1,11 +1,13 @@
 (ns kitsune.auth.subs
-  (:require [re-frame.core :as rf]))
+  (:require [re-frame.core :as rf]
+            [kitsune.subs :as root]))
 
 (rf/reg-sub
  ::auth
- :<- :data
+ :<- [::root/data]
  :-> :auth)
 
 (rf/reg-sub
  ::user
- (constantly nil))
+ :<- [::root/data]
+ :-> :user)
