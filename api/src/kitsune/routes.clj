@@ -10,6 +10,7 @@
             [reitit.ring.middleware.muuntaja :refer [format-middleware]]
             [reitit.swagger :refer [create-swagger-handler]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
+            [kitsune.auth.routes :as auth]
             [kitsune.fed.routes :as fed]
             [kitsune.uri :as uri]
             [kitsune.well-known.routes :as well-known]
@@ -23,6 +24,7 @@
    [["/@:name"
      {:name ::profile
       :parameters {:path {:name :string}}}]
+    auth/routes
     fed/routes
     well-known/routes
     ["/openapi.json"

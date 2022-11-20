@@ -16,6 +16,7 @@
   (when-let [owner (find-or-fetch ::res/account owner-id)]
     (let [{uri :id url :url text :content spoiler :summary
            :or {url uri}} object]
+      (kitsune.lang/inspect object)
       (note/create
        {:uri (not-empty (str uri))
         :url (not-empty (str url))
