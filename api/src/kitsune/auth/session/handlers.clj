@@ -26,8 +26,10 @@
   [{{{:keys [persistent?]} :body} :parameters}]
   (if-let [user nil]
     {:status 201
-     :session {:user-id (:users/id user)
-               :persistent? (boolean persistent?)}
+     :session (with-meta
+                {:user-id (:users/id user)
+                 :persistent? (boolean persistent?)}
+                {:recreate true})
      :session-cookie-attrs (when persistent? {:max-age session-time})
      :body {:token (token {:user-id (:users/id user)})}}
     {:status 404}))
