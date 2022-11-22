@@ -1,1 +1,3 @@
 /Clojure Party REPL*
+.shadow-cljs
+node_modules

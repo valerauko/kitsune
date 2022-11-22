@@ -1,8 +1,6 @@
-node_modules
 public/js
 public/css/ui.css
 public/images
-.shadow-cljs
 .nrepl-port
 .calva
 .clj-kondo/.cache
