@@ -2,7 +2,7 @@
   (:require [clojure.java.io :as io]
             [clojure.repl :refer [doc source]]
             [clojure.tools.logging :as log]
-            [clojure.tools.namespace.repl :refer [refresh refresh-dirs set-refresh-dirs]]
+            [clojure.tools.namespace.repl :refer [refresh set-refresh-dirs]]
             [mount.core :refer [defstate start stop]]
             [camel-snake-kebab.core :refer [->kebab-case-string]]
             [next.jdbc :as jdbc :refer [with-transaction]]
