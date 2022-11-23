@@ -34,7 +34,7 @@
    {:or {prefix "" suffix "" type "text"}}]
   (let [field-opts (into {:class [$field]
                           :type type}
-                         (dissoc opts :class :type))]
+                         (dissoc opts :class :prefix :suffix :type))]
     [:div
      {:class [$wrap]}
      [:div
