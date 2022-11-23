@@ -1,6 +1,8 @@
 (ns kitsune.auth.session.handlers
   (:refer-clojure :exclude [identity])
-  (:require [kitsune.auth.jwt :as jwt])
+  (:require [buddy.hashers :as hash]
+            [kitsune.auth.jwt :as jwt]
+            [kitsune.db.user :as user])
   (:import [java.time
             ZonedDateTime
             ZoneId]))
@@ -31,15 +33,20 @@
     {:status 401}))
 
 (defn login
-  [{{{:keys [persistent?]} :body} :parameters}]
-  (if-let [user nil]
-    {:status 201
-     :session (with-meta
-                {:user-id (:users/id user)
-                 :persistent? (boolean persistent?)}
-                {:recreate true})
-     :session-cookie-attrs (when persistent? {:expires (two-weeks-later)})
-     :body {:token (token {:user-id (:users/id user)})}}
+  [{{{:keys [email password persistent?]} :form} :parameters}]
+  (if-let [user (user/find-by-email email)]
+    (let [result (hash/verify password (:users/password user))]
+      ;; TODO: consider auto-rehashing passwords as buddy suggests
+      ;; cf https://funcool.github.io/buddy-hashers/latest/user-guide.html#password-updating
+      (if (:valid result)
+        {:status 201
+         :session (with-meta
+                    {:user-id (:users/id user)
+                     :persistent? (boolean persistent?)}
+                    {:recreate true})
+         :session-cookie-attrs (when persistent? {:expires (two-weeks-later)})
+         :body {:token (token {:user-id (:users/id user)})}}
+        {:status 404}))
     {:status 404}))
 
 (defn logout
