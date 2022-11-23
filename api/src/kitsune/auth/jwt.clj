@@ -1,4 +1,4 @@
-(ns kitsune.jwt
+(ns kitsune.auth.jwt
   (:require [clojure.tools.logging :as log]
             [mount.core :refer [defstate]]
             [buddy.core.keys :as keys]

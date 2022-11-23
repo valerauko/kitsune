@@ -1,6 +1,6 @@
 (ns kitsune.auth.session.handlers
   (:refer-clojure :exclude [identity])
-  (:require [kitsune.jwt :as jwt])
+  (:require [kitsune.auth.jwt :as jwt])
   (:import [java.time
             ZonedDateTime
             ZoneId]))
