@@ -1,4 +1,4 @@
-(ns kitsune.auth.session.wrappers
+(ns kitsune.auth.session.store
   (:require [ring.middleware.session.store :refer [SessionStore]]
             [taoensso.carmine :as car]
             [kitsune.cache :as cache]

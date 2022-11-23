@@ -24,6 +24,7 @@
                   :exclusions [com.taoensso/encore]]
                  [com.taoensso/encore "3.32.0"]
                  [com.nilenso/goose "0.3.0"]
+                 [buddy/buddy-auth "3.0.323"]
                  [buddy/buddy-hashers "1.8.158"]
                  [buddy/buddy-sign "3.4.333"]
                  [org.mariadb.jdbc/mariadb-java-client "3.0.8"]
