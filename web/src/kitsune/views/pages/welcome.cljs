@@ -48,21 +48,25 @@
    {:class [$form]
     :on-submit #(.preventDefault %)}
    [label-field
-    {:label "Email"
-     :prefix [:> IconMail {}]
-     :min-length 5
+    {:auto-complete "username"
+     :auto-focus true
+     :label "Email"
      :max-length 200
-     :type "email"
-     :required true
+     :min-length 5
+     :name "email"
      :placeholder "best-fox-ever@vulp.es"
-     :auto-complete "username"}]
-   [label-field
-    {:label "Password"
-     :prefix [:> IconLock {}]
-     :min-length 8
-     :type "password"
+     :prefix [:> IconMail {}]
      :required true
-     :auto-complete "current-password"}]
+     :type "email"}]
+   [label-field
+    {:auto-complete "current-password"
+     :label "Password"
+     :max-length 1000
+     :min-length 8
+     :name "password"
+     :prefix [:> IconLock {}]
+     :required true
+     :type "password"}]
    [:div
     {:class [$row (css :justify-between)]}
     [button
