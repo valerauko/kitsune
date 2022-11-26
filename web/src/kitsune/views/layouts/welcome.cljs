@@ -26,7 +26,7 @@
 (def $logo
   (css {:margin "-75px auto 0 auto"
         :background-color "#1d1b20"
-        :background-image "url(\"/icon.png\")"
+        :background-image "url(\"/images/logo.png\")"
         :background-size "80% 80%"
         :background-position "center center"
         :background-repeat "no-repeat"
