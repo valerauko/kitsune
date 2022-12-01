@@ -2,8 +2,7 @@
   (:refer-clojure :exclude [format])
   (:require [muuntaja.format.core :as m]
             [clojure.data.xml :as xml]
-            [clojure.java.io :as io]
-            [clojure.tools.logging :as log])
+            [clojure.java.io :as io])
   (:import [java.io
             ByteArrayOutputStream
             OutputStream]))
@@ -12,7 +11,6 @@
   (reify
     m/Decode
     (decode [_ data _]
-      (log/debug "decode")
       (xml/parse data))))
 
 (defn encoder [_]
