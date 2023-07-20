@@ -1,0 +1,2 @@
+{:lint-as {mount.core/defstate clojure.core/def
+           kitsune.db/defquery clojure.core/defn}}
