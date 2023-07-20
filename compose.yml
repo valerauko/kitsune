@@ -13,7 +13,7 @@ services:
 
   web:
     build:
-      context: web/dev/image
+      context: dev/web
     working_dir: /usr/local/kitsune/web
     ports:
       - 8280:8280
@@ -41,8 +41,8 @@ services:
     ports:
       - 15672:15672
     volumes:
-      - ./rabbitmq/rabbitmq_delayed_message_exchange.ez:/opt/rabbitmq/plugins/rabbitmq_delayed_message_exchange.ez
-      - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - ./dev/rabbitmq_delayed_message_exchange.ez:/opt/rabbitmq/plugins/rabbitmq_delayed_message_exchange.ez
+      - ./dev/enabled_plugins:/etc/rabbitmq/enabled_plugins
       - rabbitmq:/var/lib/rabbitmq
 
   cache:
@@ -57,7 +57,7 @@ services:
 
   gateway:
     volumes:
-      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./dev/nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
       - 3000:3000
     networks:
