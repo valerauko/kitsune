@@ -64,3 +64,7 @@
           [{id :accounts/id}] (-create-account tx name display-name public)]
       (-create-user tx id private)
       (... id name))))
+
+(defn run-query!
+  [string]
+  (jdbc/execute! datasource [string]))
